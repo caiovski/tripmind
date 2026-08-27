@@ -1,3 +1,4 @@
+from datetime import datetime
 from functools import lru_cache
 import json
 from typing import Any, Dict
@@ -5,6 +6,16 @@ import requests
 
 GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
+
+DIAS_SEMANA_PT = [
+    "segunda-feira",
+    "terça-feira",
+    "quarta-feira",
+    "quinta-feira",
+    "sexta-feira",
+    "sábado",
+    "domingo",
+]
 
 WMO_WEATHER_CODES: Dict[int, str] = {
     0: "Céu limpo e ensolarado",
@@ -68,8 +79,20 @@ def _cached_weather_json(city: str, days: int) -> str:
     forecast_list = []
     for i, date_str in enumerate(daily.get("time", [])):
         code = daily["weathercode"][i]
+        try:
+            dt = datetime.strptime(date_str, "%Y-%m-%d")
+            dia_semana = DIAS_SEMANA_PT[dt.weekday()]
+            data_formatada = dt.strftime("%d/%m/%Y")
+            rotulo_dia = f"{data_formatada} ({dia_semana})"
+        except Exception:
+            rotulo_dia = date_str
+            data_formatada = date_str
+            dia_semana = ""
+
         forecast_list.append({
-            "dia": date_str,
+            "dia": rotulo_dia,
+            "data": data_formatada,
+            "dia_semana": dia_semana,
             "condicao": WMO_WEATHER_CODES.get(code, f"Código {code}"),
             "temp_max_c": daily["temperature_2m_max"][i],
             "temp_min_c": daily["temperature_2m_min"][i],
@@ -84,6 +107,7 @@ def _cached_weather_json(city: str, days: int) -> str:
         "dias_solicitados": safe_days,
         "previsao": forecast_list,
     }, ensure_ascii=False)
+
 
 
 def fetch_weather_forecast(city: str, days: int = 5, timeout: int = 5) -> Dict[str, Any]:

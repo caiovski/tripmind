@@ -135,8 +135,9 @@ html, body, [class*="css"] {
     letter-spacing: 0.05em;
 }
 
-/* Estilização da Sidebar Dark Minimalista */
-section[data-testid="stSidebar"] {
+/* Estilização da Sidebar Dark */
+section[data-testid="stSidebar"],
+[data-testid="stSidebar"] {
     background-color: #0b1120 !important;
     border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
@@ -175,6 +176,28 @@ button[kind="primary"]:hover {
 }
 
 /* =======================================================
+   OCULTA O ÍCONE PISCANDO/STATUS AO LADO DO STOP NO TOPO
+   ======================================================= */
+
+div[data-testid="stStatusWidget"] svg,
+div[data-testid="stStatusWidget"] [data-testid="stStatusWidgetStatus"],
+div[data-testid="stStatusWidget"] [class*="StatusWidget_status"],
+div[data-testid="stStatusWidget"] [class*="stStatusWidget"] > svg,
+div[data-testid="stStatusWidget"] img,
+div[data-testid="stStatusWidget"] [role="img"],
+header[data-testid="stHeader"] [data-testid="stStatusWidget"] svg,
+header[data-testid="stHeader"] [data-testid="stStatusWidget"] [class*="status"],
+header[data-testid="stHeader"] [data-testid="stStatusWidget"] > div:first-child:not(:has(button)) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0px !important;
+    height: 0px !important;
+    pointer-events: none !important;
+}
+
+
+/* =======================================================
    ESTILIZAÇÃO DOS BOTÕES '+' (VERDE) E '-' (VERMELHO)
    ======================================================= */
 
@@ -197,110 +220,182 @@ button[data-testid="stNumberInputStepDown"]:focus {
 }
 
 /* =======================================================
-   CONVERSAS SALVAS ESTILO CHATGPT (SEM CARD + HOVER EFFECT)
+   SIDEBAR RECENTES ESTILO CHATGPT (SLIM, COMPACTO E ELEGANTE)
    ======================================================= */
 
 .chatgpt-sidebar-title {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #94a3b8;
-    margin-bottom: 10px;
-    letter-spacing: 0.02em;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    color: #94a3b8 !important;
+    margin-top: 6px !important;
+    margin-bottom: 4px !important;
+    padding-left: 2px !important;
+    letter-spacing: 0.03em !important;
+    text-transform: uppercase;
 }
 
-/* Linha da conversa salva */
-div[data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {
-    position: relative;
-    border-radius: 8px !important;
-    padding: 2px 4px !important;
+/* Linha da conversa: altura slim de 32px, sem borda */
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 0px 4px !important;
     margin-bottom: 2px !important;
-    transition: background-color 0.15s ease !important;
-    border: none !important;
-    background: transparent !important;
+    margin-top: 0px !important;
+    min-height: 32px !important;
+    height: 32px !important;
+    transition: background-color 0.12s ease !important;
     box-shadow: none !important;
+    display: flex !important;
+    align-items: center !important;
 }
 
-/* Hover na linha: fundo cinza escuro sutil como no ChatGPT */
-div[data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:hover {
-    background-color: rgba(255, 255, 255, 0.08) !important;
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"]:hover {
+    background-color: #212121 !important;
 }
 
-/* Botão de título da conversa (puro texto, alinhado à esquerda) */
-div[data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] button {
+/* Remove completamente bordas, fundos e paddings excessivos */
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] button,
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] div.stButton > button,
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] div[data-testid="stPopover"] > button,
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] div[data-testid="stPopover"] button {
     background: transparent !important;
+    background-color: transparent !important;
     border: none !important;
+    border-color: transparent !important;
     box-shadow: none !important;
-    color: #e2e8f0 !important;
+    outline: none !important;
+    margin: 0 !important;
+    padding: 0px 4px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    line-height: 30px !important;
+}
+
+/* Botão do Título da Conversa (Alinhado à esquerda e para cima) */
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child button {
+    color: #ececf1 !important;
     text-align: left !important;
     justify-content: flex-start !important;
-    padding: 6px 8px !important;
-    font-size: 0.88rem !important;
-    font-weight: 500 !important;
-    border-radius: 6px !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
+    font-size: 0.85rem !important;
+    font-weight: 400 !important;
     width: 100% !important;
+    padding-left: 2px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
 }
 
-div[data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] button:hover {
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="column"]:first-child button p {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 30px !important;
+    font-size: 0.85rem !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"]:hover [data-testid="column"]:first-child button {
     color: #ffffff !important;
 }
 
-/* Animação Marquee de rotação de texto no hover quando o nome for longo */
-div[data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:hover button p {
+/* Animação Marquee no hover quando o nome for longo */
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"]:hover [data-testid="column"]:first-child button p {
     display: inline-block !important;
     white-space: nowrap !important;
-    animation: marquee-scroll 4.5s ease-in-out infinite alternate !important;
+    animation: marquee-scroll 4s ease-in-out infinite alternate !important;
 }
 
 @keyframes marquee-scroll {
-    0% {
-        transform: translateX(0%);
-    }
-    30% {
-        transform: translateX(0%);
-    }
-    100% {
-        transform: translateX(-40%);
-    }
+    0% { transform: translateX(0%); }
+    25% { transform: translateX(0%); }
+    100% { transform: translateX(-35%); }
 }
 
-/* Botão de 3 pontinhos (Popover): Oculto por padrão, surge suave no hover */
-div[data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] div[data-testid="stPopover"] {
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
+/* Popover dos 3 pontinhos: Invisível por padrão, surge no hover */
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="stPopover"] {
+    opacity: 0 !important;
+    transition: opacity 0.15s ease-in-out !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
 }
 
-div[data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:hover div[data-testid="stPopover"] {
-    opacity: 1;
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"]:hover [data-testid="stPopover"],
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="stPopover"]:focus-within {
+    opacity: 1 !important;
 }
 
-/* Estilo do botão de 3 pontos */
-div[data-testid="stSidebar"] div[data-testid="stPopover"] button {
-    background: transparent !important;
-    border: none !important;
-    color: #94a3b8 !important;
-    font-size: 1.15rem !important;
-    font-weight: 700 !important;
-    padding: 2px 6px !important;
+/* Botão dos 3 pontinhos horizontais compactos */
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="column"]:last-child button {
+    color: #9ca3af !important;
+    font-size: 0.95rem !important;
+    letter-spacing: 0.5px !important;
+    white-space: nowrap !important;
     justify-content: center !important;
-    box-shadow: none !important;
+    display: flex !important;
+    align-items: center !important;
 }
 
-div[data-testid="stSidebar"] div[data-testid="stPopover"] button:hover {
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="column"]:last-child button p {
+    margin: 0 !important;
+    line-height: 1 !important;
+    font-size: 0.95rem !important;
+    letter-spacing: 0.5px !important;
+}
+
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="column"]:last-child button:hover {
     color: #ffffff !important;
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-radius: 4px !important;
 }
 
-/* Indicador de conversa ativa */
-.active-chat-indicator {
-    color: #38bdf8 !important;
-    font-weight: 600 !important;
+/* Remove a seta chevron do popover */
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="stPopover"] button svg,
+section[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="stPopover"] svg {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0px !important;
+    height: 0px !important;
+}
+
+/* =======================================================
+   POPOVER DROPDOWN MENU ESTILO CHATGPT
+   ======================================================= */
+
+div[data-testid="stPopoverBody"] {
+    background-color: #202123 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 8px !important;
+    padding: 8px 10px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+    max-width: 220px !important;
+    min-width: 190px !important;
+}
+
+div[data-testid="stPopoverBody"] input {
+    background-color: #121214 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 6px !important;
+    color: #ffffff !important;
+    font-size: 0.82rem !important;
+    padding: 4px 8px !important;
+    height: 30px !important;
+}
+
+div[data-testid="stPopoverBody"] button {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 6px !important;
+    color: #ececf1 !important;
+    font-size: 0.8rem !important;
+    font-weight: 500 !important;
+    padding: 2px 8px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    transition: background-color 0.15s ease !important;
+}
+
+div[data-testid="stPopoverBody"] button:hover {
+    background-color: rgba(255, 255, 255, 0.18) !important;
+    color: #ffffff !important;
 }
 </style>
 """

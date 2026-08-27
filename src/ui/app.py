@@ -116,9 +116,24 @@ def start_new_conversation() -> None:
     st.rerun()
 
 
+DIAS_SEMANA_NOMES = [
+    "segunda-feira",
+    "terça-feira",
+    "quarta-feira",
+    "quinta-feira",
+    "sexta-feira",
+    "sábado",
+    "domingo",
+]
+
+
 def build_contextual_prompt(user_prompt: str, history: List[Dict[str, str]], trip_info: Optional[Dict[str, Any]]) -> str:
     """Constrói prompt enriquecido com o contexto da viagem e histórico recente de turnos."""
     context_blocks: List[str] = []
+
+    hoje_obj = date.today()
+    hoje_str = f"{hoje_obj.strftime('%d/%m/%Y')} ({DIAS_SEMANA_NOMES[hoje_obj.weekday()]})"
+    context_blocks.append(f"[DATA ATUAL DE REFERÊNCIA: {hoje_str}]")
 
     # 1. Dados estruturados da viagem (se disponíveis)
     if trip_info and trip_info.get("destino"):
@@ -131,6 +146,7 @@ def build_contextual_prompt(user_prompt: str, history: List[Dict[str, str]], tri
             f"- Estilo da Viagem: {trip_info.get('tipo', 'cidade')}\n"
             f"- Orçamento Estipulado: R$ {trip_info.get('orcamento', 0):,.2f}]"
         )
+
 
     # 2. Histórico recente de mensagens anteriores da conversa
     if history:
@@ -274,14 +290,15 @@ def main() -> None:
             if isinstance(datas_selecionadas, (tuple, list)) and len(datas_selecionadas) == 2:
                 data_ida, data_volta = datas_selecionadas
                 calc_dias = max((data_volta - data_ida).days, 1)
-                periodo_str = f"{data_ida.strftime('%d/%m/%Y')} a {data_volta.strftime('%d/%m/%Y')}"
+                periodo_str = f"{data_ida.strftime('%d/%m/%Y')} ({DIAS_SEMANA_NOMES[data_ida.weekday()]}) a {data_volta.strftime('%d/%m/%Y')} ({DIAS_SEMANA_NOMES[data_volta.weekday()]})"
             elif isinstance(datas_selecionadas, (tuple, list)) and len(datas_selecionadas) == 1:
                 data_ida = datas_selecionadas[0]
                 calc_dias = 1
-                periodo_str = data_ida.strftime('%d/%m/%Y')
+                periodo_str = f"{data_ida.strftime('%d/%m/%Y')} ({DIAS_SEMANA_NOMES[data_ida.weekday()]})"
             else:
                 calc_dias = 5
                 periodo_str = ""
+
 
             viajantes = st.number_input(
                 "Viajantes",

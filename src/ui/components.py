@@ -150,10 +150,10 @@ def render_saved_conversations_sidebar(
     on_new_session: Callable[[], None],
 ) -> None:
     """Renderiza o histórico de conversas no estilo ChatGPT (sem cards, hover suave e menu de 3 pontos)."""
-    st.markdown('<div class="chatgpt-sidebar-title">Recentes ▾</div>', unsafe_allow_html=True)
-
     if st.button("+ Nova Viagem", use_container_width=True):
         on_new_session()
+
+    st.markdown('<div class="chatgpt-sidebar-title">Recentes ▾</div>', unsafe_allow_html=True)
 
     sessions = list_sessions()
     if not sessions:
@@ -163,33 +163,32 @@ def render_saved_conversations_sidebar(
     for s in sessions[:15]:
         sess_id = s["id"]
         sess_title = s.get("title") or "Viagem"
-        is_active = (sess_id == current_session_id)
-        btn_label = f"{'▸ ' if is_active else ''}{sess_title}"
 
-        # Layout sem card estilo ChatGPT: título com rolagem no hover e botão ⋮ flutuante
-        col_title, col_opts = st.columns([5.2, 1.1])
+        # Layout slim estilo ChatGPT: proporção 8.5 para 1.5
+        col_title, col_opts = st.columns([8.5, 1.5])
 
         with col_title:
-            if st.button(btn_label, key=f"sess_btn_{sess_id}", use_container_width=True):
+            if st.button(sess_title, key=f"sess_btn_{sess_id}", use_container_width=True):
                 on_select_session(sess_id)
 
         with col_opts:
-            with st.popover("⋮", use_container_width=True):
-                st.caption("Opções da Conversa")
+            with st.popover("···", use_container_width=True):
                 new_title = st.text_input(
-                    "Renomear",
+                    "Nome",
                     value=sess_title,
                     key=f"rename_input_{sess_id}",
+                    label_visibility="collapsed",
                     placeholder="Novo nome...",
                 )
-                if st.button("Salvar nome", key=f"save_rename_{sess_id}", use_container_width=True):
-                    rename_session(sess_id, new_title)
-                    st.rerun()
-
-                st.divider()
-                if st.button("Excluir conversa", key=f"del_btn_{sess_id}", type="secondary", use_container_width=True):
-                    delete_session(sess_id)
-                    if is_active:
-                        on_new_session()
-                    else:
+                col_b1, col_b2 = st.columns(2)
+                with col_b1:
+                    if st.button("Salvar", key=f"save_rename_{sess_id}", use_container_width=True):
+                        rename_session(sess_id, new_title)
                         st.rerun()
+                with col_b2:
+                    if st.button("Excluir", key=f"del_btn_{sess_id}", type="secondary", use_container_width=True):
+                        delete_session(sess_id)
+                        if sess_id == current_session_id:
+                            on_new_session()
+                        else:
+                            st.rerun()
