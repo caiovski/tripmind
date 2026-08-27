@@ -1,0 +1,16 @@
+# TripMind AI - Dependências do Projeto
+# Compatível com Python 3.10+ (Windows, Linux Mint, Ubuntu, macOS)
+
+streamlit>=1.35.0,<1.49.0
+agno>=1.0.0
+google-genai>=0.1.1
+groq>=0.9.0
+tavily-python>=0.3.0
+yfinance>=0.2.38
+requests>=2.31.0
+python-dotenv>=1.0.0
+pydantic>=2.7.0
+reportlab>=4.0.0
+packaging<26
+pandas<3
+protobuf<7

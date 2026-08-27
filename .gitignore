@@ -1,5 +1,27 @@
+# Environment and Secrets
 .env
-*.pyc
+.env.local
+.env.*.local
+
+# Python Cache and Bytecode
+*.py[cod]
+*$py.class
 __pycache__/
+*.pyc
+
+# Virtual Environments
 .venv/
+venv/
+ENV/
+env/
+
+# Data & Temporary Sessions
+data/
+*.log
+.pytest_cache/
+.coverage
+
+# IDE & OS files
 .DS_Store
+.vscode/
+.idea/

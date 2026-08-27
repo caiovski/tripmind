@@ -1,39 +1,40 @@
 # Tasks: TripMind Travel Agent
 
-## Setup
+## Setup & Portabilidade
 
-- [x] Criar venv e instalar dependências (`pip install -r scripts/requirements.txt`)
-- [x] Adicionar dependências novas ao `requirements.txt`: `google-genai`, `streamlit`
-- [x] Criar `.env` a partir de template com `GROQ_API_KEY`, `TAVILY_API_KEY`, `GEMINI_API_KEY`, `MODEL_PROVIDER`
-- [ ] Obter chaves: Gemini (aistudio.google.com), Tavily (tavily.com), Groq (console.groq.com)
+- [x] Criar venv e instalar dependências (`pip install -r requirements.txt`)
+- [x] Adicionar dependências universais no `requirements.txt` da raiz
+- [x] Criar scripts de execução automática: `iniciar.sh` (Linux Mint) e `iniciar.bat` (Windows)
+- [x] Configurar `.env` com `GEMINI_API_KEY`, `TAVILY_API_KEY`, `GROQ_API_KEY` e `MODEL_PROVIDER`
 
-## Tools customizadas (módulo `travel_tools.py`)
+## Clean Architecture (`src/`)
 
-- [x] Implementar `get_weather(city, days)` via Open-Meteo (sem chave)
-- [x] Implementar `calculate_travel_budget(days, travelers, profile, currency)` (perfis Econômico/Moderado/Luxo; categorias: Alimentação, Passeios, Transporte Local, Emergência)
-- [x] Implementar `generate_packing_list(weather_forecast, days, trip_type)` (checklist por clima: praia, frio, chuva, urbano)
+- [x] **Configuração (`src/config/`)**: `settings.py` com dataclasses e validação de chaves
+- [x] **Domínio Puro (`src/domain/`)**:
+  - `budget.py`: cálculo determinístico de orçamento por pessoa/categoria em BRL
+  - `packing.py`: regras de montagem de mala por limites climáticos e estilo de viagem
+- [x] **Serviços & Adaptadores (`src/services/`)**:
+  - `weather_service.py`: integração Open-Meteo API com geocoding e códigos WMO em português
+  - `currency_service.py`: cotações e conversão para Real com yFinance
+  - `search_service.py`: busca web em tempo real com Tavily e fallback gracioso
+- [x] **Agente (`src/agent/`)**:
+  - `prompts.py`: prompt estruturado em português com diretrizes claras dia a dia
+  - `tools_registry.py`: conversão e documentação das tools para o Agno
+  - `agent_factory.py`: fábrica do Agente Agno (Gemini 3.5 Flash padrão, Groq fallback)
+- [x] **Apresentação & UI (`src/ui/`)**:
+  - `styles.py`: tema dark moderno com CSS customizado
+  - `components.py`: cabeçalho com badges, cards de métricas, quick prompts e exportação
+  - `app.py`: interface interativa Streamlit com chat, formulário e atalhos rápidos
 
-## Agente (módulo `agent.py`)
+## Pontos de Entrada & Compatibilidade
 
-- [x] Criar agente `agno` com modelo configurável (Gemini 3.5 Flash padrão, Groq fallback)
-- [x] Registrar tools: `TavilyTools`, `YFinanceTools`, e as 3 tools customizadas
-- [x] Escrever instruções em português: roteiro Manhã/Tarde/Noite, adaptação ao clima, lógica nacional vs internacional (moeda + dicas culturais), formatação markdown
-
-## Teste CLI
-
-- [x] Testar o agente por linha de comando (padrão `script04.py`): viagem internacional (ex: Lisboa)
-- [x] Testar viagem nacional (ex: Salvador) e conferir lógica adaptativa
-- [x] Validar orçamento e mala com saídas consistentes
-
-## Interface Streamlit (`app.py`)
-
-- [x] Formulário: destino, dias, orçamento, estilo, interesses
-- [x] Exibição do roteiro em cards (markdown) e seções de orçamento/mala/dicas
-- [x] Chat de ajustes conversando com o mesmo agente
-- [x] Spinner/feedback durante chamadas longas de tools
+- [x] `app.py`: ponto de entrada raiz para execução do Streamlit (`streamlit run app.py`)
+- [x] `agent.py`: ponto de entrada CLI para interação via terminal (`python agent.py`)
+- [x] `travel_tools.py`: módulo de reexportação para compatibilidade
+- [x] `smoke_test.py`: bateria de testes automatizados ponta a ponta
+- [x] `README.md`: documentação completa com arquitetura, funcionalidades e guias para Linux Mint e Windows
 
 ## Finalização
 
-- [ ] Teste ponta a ponta completo (formulário → roteiro → ajuste via chat)
-- [ ] README com instruções de execução, variáveis de ambiente e demo
-- [ ] Commitar mudanças
+- [x] Validação automatizada ponta a ponta (4/4 testes aprovados)
+- [x] Teste de compatibilidade e portabilidade

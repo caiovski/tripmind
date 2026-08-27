@@ -1,84 +1,54 @@
+"""TripMind AI - Interface de Linha de Comando (CLI).
+
+Permite interagir e testar o agente diretamente pelo terminal.
+Comando para execução:
+    python agent.py
+"""
+
 import os
+import sys
 
-from agno.agent import Agent
-from agno.models.google import Gemini
-from agno.models.groq import Groq
-from agno.tools.tavily import TavilyTools
-from dotenv import load_dotenv
+# Configura encoding UTF-8 no terminal Windows
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
-from travel_tools import calculate_travel_budget, convert_currency, generate_packing_list, get_weather
-
-load_dotenv()
-
-
-def _dummy_web_search(query: str) -> str:
-    """Busca na web quando o Tavily não está configurado.
-
-    Args:
-        query (str): Termo de busca.
-
-    Returns:
-        str: Aviso de que a busca não está disponível.
-    """
-    return "Busca web não disponível (TAVILY_API_KEY não configurada). Use seu conhecimento e a previsão do tempo."
-
-INSTRUCTIONS = """Você é o TripMind, um assistente roteirista de viagens em português do Brasil.
-
-Seu trabalho é montar roteiros de viagem personalizados e interativos. SEMPRE siga este fluxo:
-
-1. CLIMA: chame get_weather(cidade, dias) para saber a previsão dos dias da viagem.
-2. PESQUISA: use TavilyTools para buscar atrações, eventos sazonais e restaurantes bem avaliados
-   no destino (em português).
-3. ROTEIRO: monte a programação dia a dia em Manhã / Tarde / Noite, adaptando ao clima:
-   - Dia chuvoso ou frio: museus, cafés, shoppings, exposições, spas (atrações cobertas).
-   - Dia ensolarado e quente: praias, parques, trilhas, passeios ao ar livre.
-   Intercale também um ritmo razoável (não encha o dia) e respeite os interesses do viajante.
-4. ORÇAMENTO: chame calculate_travel_budget(dias, viajantes, perfil) e inclua os valores no roteiro.
-5. MALA: chame generate_packing_list com o JSON do clima e o tipo de viagem (praia, cidade, natureza ou neve).
-6. MOEDA E CULTURA:
-   - Viagem internacional: use convert_currency para mostrar custos em reais e dê dicas de etiqueta
-     cultural (gorjetas, costumes, transporte público, expressões úteis).
-   - Viagem nacional (Brasil): destaque pratos típicos regionais, gírias locais e recomendações de segurança.
-
-REGRAS:
-- Responda sempre em português do Brasil, com formatação markdown e tabelas quando útil.
-- Seja conciso e organizado: seções claras com cabeçalhos (##), sem repetir informações.
-- Se o usuário pedir ajustes no roteiro, aplique as mudanças mantendo as demais partes.
-- Se algum dado (clima, cotações) não puder ser obtido, avise e continue com o que tiver."""
+from src.agent.agent_factory import create_travel_agent
 
 
-def build_agent(debug: bool = False) -> Agent:
-    provider = os.getenv("MODEL_PROVIDER", "gemini").strip().lower()
-    if provider == "groq":
-        model = Groq(id="llama-3.3-70b-versatile")
-    else:
-        model = Gemini(id="gemini-3.5-flash", retries=3, delay_between_retries=6.0)
+def run_cli() -> None:
+    """Executa o loop interativo no terminal."""
+    print("=" * 60)
+    print("TripMind AI — Agente Roteirista de Viagens (Modo CLI)")
+    print("=" * 60)
+    print("Digite 'sair' ou pressione CTRL+C para encerrar.\n")
 
-    tools = [
-        get_weather,
-        calculate_travel_budget,
-        convert_currency,
-        generate_packing_list,
-    ]
-    if os.getenv("TAVILY_API_KEY"):
-        tools.append(TavilyTools())
-    else:
-        tools.append(_dummy_web_search)
+    try:
+        agent = create_travel_agent()
+    except Exception as exc:
+        print(f"[ERRO] Falha ao inicializar o agente: {exc}")
+        sys.exit(1)
 
-    return Agent(
-        model=model,
-        tools=tools,
-        instructions=INSTRUCTIONS,
-        markdown=True,
-        debug_mode=debug,
-    )
+    while True:
+        try:
+            prompt = input("\nVocê: ").strip()
+            if not prompt:
+                continue
+            if prompt.lower() in ("sair", "exit", "quit"):
+                print("\nAté mais e boa viagem!")
+                break
+
+            print("\nTripMind pensando...")
+            agent.print_response(prompt)
+
+        except KeyboardInterrupt:
+            print("\n\nSessão encerrada.")
+            break
+        except Exception as exc:
+            print(f"\n[AVISO] Erro durante a execução: {exc}")
 
 
 if __name__ == "__main__":
-    agent = build_agent()
-    print("=== TripMind CLI (CTRL+C para sair) ===")
-    while True:
-        mensagem = input("\nVocê: ")
-        if mensagem.strip().lower() in ("sair", "exit", "quit"):
-            break
-        agent.print_response(mensagem)
+    run_cli()
